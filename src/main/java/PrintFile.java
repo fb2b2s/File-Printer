@@ -77,7 +77,8 @@ public class PrintFile {
         return row.toString();
     }
 
-    boolean cellsLeft(List<List<String >> cellsLines, int[] indices) {
+    // while loop condition breaker
+    private boolean cellsLeft(List<List<String >> cellsLines, int[] indices) {
         boolean loop = false;
         for (int i = 0; i < cellsLines.size(); i++) {
             loop = (loop ||  indices[i] < cellsLines.get(i).size());
