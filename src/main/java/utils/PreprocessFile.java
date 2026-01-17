@@ -10,19 +10,19 @@ public class PreprocessFile {
     final String ROW_SEPARATOR_REGEX = "\\n";
     final String ENTRY_SEPARATOR_REGEX = "\\t";
 
-    private final String fileConent;
+    private final String fileContent;
     private final int columnsCount;
     private final int lineCharLimit;
 
     public PreprocessFile(String filePath, int columnsCount, int lineCharLimit) throws IOException {
-        this.fileConent = Files.readString(Paths.get(filePath));
+        this.fileContent = Files.readString(Paths.get(filePath));
         this.columnsCount = columnsCount;
         this.lineCharLimit = lineCharLimit;
     }
 
     public List<List<List<String>>> getRowCellLines() {
         // Get lines in a cell for all cells in a row
-        String[] rowLines = fileConent.split(ROW_SEPARATOR_REGEX);
+        String[] rowLines = fileContent.split(ROW_SEPARATOR_REGEX);
         List<List<List<String>>> rowCellLines = new ArrayList<>();
         for (String line : rowLines) {
             String[] cells = line.split(ENTRY_SEPARATOR_REGEX);
@@ -38,17 +38,10 @@ public class PreprocessFile {
 
     // make lines out of all the text in a cell
     private List<String> splitCellIntoLines(String cell) {
-        int cellLinesCount = (cell.length() % lineCharLimit == 0) ? cell.length() / lineCharLimit : cell.length() / lineCharLimit + 1;
         List<String> lines = new ArrayList<>();
-        int idx = 0;
-        for (int i = 0; i < cellLinesCount - 1; i++) {
-            lines.add(cell.substring(idx, idx + lineCharLimit));
-            idx += lineCharLimit;
-        }
-
-        // handle the last separately
-        if (idx < cell.length()) {
-            lines.add(cell.substring(idx));
+        for (int start = 0; start < cell.length(); start += lineCharLimit) {
+            int end = Math.min(start + lineCharLimit, cell.length());
+            lines.add(cell.substring(start, end));
         }
         return lines;
     }
