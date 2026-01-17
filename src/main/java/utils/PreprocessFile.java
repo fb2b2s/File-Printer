@@ -45,4 +45,20 @@ public class PreprocessFile {
         }
         return lines;
     }
+
+    public int[] getMaxWidthOfColumns(List<List<List<String>>> rowCellLines) {
+        int[] maxWidth = new int[columnsCount];
+        for (List<List<String>> cellLines : rowCellLines) {
+            for (int i = 0; i < cellLines.size(); i++) {
+                // if a cell has multiple lines, then the width is LIMIT
+                if (cellLines.get(i).size() > 1) {
+                    maxWidth[i] = lineCharLimit;
+                } else {
+                    // if only 1 line then compare with the line's length
+                    maxWidth[i] = Math.max(maxWidth[i], cellLines.get(i).get(0).length());
+                }
+            }
+        }
+        return maxWidth;
+    }
 }
