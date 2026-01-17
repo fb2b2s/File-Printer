@@ -28,7 +28,7 @@ public class PreprocessFile {
             String[] cells = line.split(ENTRY_SEPARATOR_REGEX);
             List<List<String>> cellLines = new ArrayList<>(); // this variable has lines for all cells in a row
             for (int i = 0; i < this.columnsCount; i++) {
-                List<String> linesCell = handleCell(cells[i]); // get all lines in a cell
+                List<String> linesCell = splitCellIntoLines(cells[i]); // get all lines in a cell
                 cellLines.add(linesCell);
             }
             rowCellLines.add(cellLines);
@@ -37,7 +37,7 @@ public class PreprocessFile {
     }
 
     // make lines out of all the text in a cell
-    private List<String> handleCell(String cell) {
+    private List<String> splitCellIntoLines(String cell) {
         int cellLinesCount = (cell.length() % lineCharLimit == 0) ? cell.length() / lineCharLimit : cell.length() / lineCharLimit + 1;
         List<String> lines = new ArrayList<>();
         int idx = 0;
