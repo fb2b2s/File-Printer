@@ -21,6 +21,8 @@ public class PrintFile {
         this.rowCellLines = preprocessFile.getRowCellLines();
     }
 
+    //TODO : Separate main to a different class
+    //TODO : Create tests for all the methods
     public static void main(String[] args) throws IOException {
         PrintFile pf = new PrintFile(args[0]);
 
@@ -33,6 +35,7 @@ public class PrintFile {
 
     private List<String> buildRows() {
         // get a max width for each column by going through every cell of a column
+        //TODO : Move maxWidth formation in the pre-processing class
         int[] maxWidth = new int[COLUMNS_COUNT];
         for (List<List<String>> cellLines : this.rowCellLines) {
             for (int i = 0; i < cellLines.size(); i++) {
