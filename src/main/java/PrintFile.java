@@ -1,6 +1,6 @@
+import utils.PreprocessFile;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,48 +12,26 @@ public class PrintFile {
     final int COLUMNS_COUNT = 4;
     final int LIMIT = 100;
     final int BUFFER_MULTIPLIER = 1;
-    final String ROW_SEPARATOR_REGEX = "\\n";
-    final String ENTRY_SEPARATOR_REGEX = "\\t";
 
     // The most important part of a text file
-    private List<List<List<String>>> rowCellLines;
+    private final List<List<List<String>>> rowCellLines;
 
-    public PrintFile() {
-        this.rowCellLines = new ArrayList<>();
+    public PrintFile(String filePath) throws IOException {
+        PreprocessFile preprocessFile = new PreprocessFile(filePath, COLUMNS_COUNT, LIMIT);
+        this.rowCellLines = preprocessFile.getRowCellLines();
     }
 
     public static void main(String[] args) throws IOException {
-        String filePath = args[0];
-        String fileContent = Files.readString(Paths.get(filePath));
-
-        PrintFile pf = new PrintFile();
-
-        // Get lines
-        String[] lines = pf.getLines(fileContent); // get each line
+        PrintFile pf = new PrintFile(args[0]);
 
         // Build rows
-        List<String> rows = pf.buildRows(lines);
+        List<String> rows = pf.buildRows();
 
         // Print the result
         rows.forEach(System.out::print);
     }
 
-    private String[] getLines(String content) {
-        return content.split(ROW_SEPARATOR_REGEX); // get each line
-    }
-
-    private List<String> buildRows(String[] rowLines) {
-        // Get lines in a cell for all cells in a row
-        for (String line : rowLines) {
-            String[] cells = line.split(ENTRY_SEPARATOR_REGEX);
-            List<List<String>> cellLines = new ArrayList<>(); // this variable has lines for all cells in a row
-            for (int i = 0; i < COLUMNS_COUNT; i++) {
-                List<String> linesCell = handleCell(cells[i]); // get all lines in a cell
-                cellLines.add(linesCell);
-            }
-            this.rowCellLines.add(cellLines);
-        }
-
+    private List<String> buildRows() {
         // get a max width for each column by going through every cell of a column
         int[] maxWidth = new int[COLUMNS_COUNT];
         for (List<List<String>> cellLines : this.rowCellLines) {
@@ -76,27 +54,10 @@ public class PrintFile {
         return rows;
     }
 
-    // make lines out of all the text in a cell
-    private List<String> handleCell(String cell) {
-        int cellLinesCount = (cell.length() % LIMIT == 0) ? cell.length() / LIMIT : cell.length() / LIMIT + 1;
-        List<String> lines = new ArrayList<>();
-        int idx = 0;
-        for (int i = 0; i < cellLinesCount - 1; i++) {
-            lines.add(cell.substring(idx, idx + LIMIT));
-            idx += LIMIT;
-        }
-
-        // handle the last separately
-        if (idx < cell.length()) {
-            lines.add(cell.substring(idx));
-        }
-        return lines;
-    }
-
     private String buildRowFromCells(List<List<String>> cellLines, int[] maxWidth) {
         StringBuilder row = new StringBuilder();
-        // get max width of each cell
 
+        // indices for lines of each cell
         int[] indices = new int[cellLines.size()];
         while (cellsLeft(cellLines, indices)) {
             for (int i = 0; i < indices.length; i++) {
