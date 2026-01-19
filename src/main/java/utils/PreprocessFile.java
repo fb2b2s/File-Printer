@@ -1,8 +1,5 @@
 package utils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,14 +10,24 @@ public class PreprocessFile {
     private final String fileContent;
     private final int columnsCount;
     private final int lineCharLimit;
+    private final boolean isValidFile;
 
-    public PreprocessFile(String filePath, int columnsCount, int lineCharLimit) throws IOException {
-        this.fileContent = Files.readString(Paths.get(filePath));
+    public PreprocessFile(String fileContent, int columnsCount, int lineCharLimit) {
+        this.fileContent = fileContent;
+        this.isValidFile = isFileFormatCorrect();
         this.columnsCount = columnsCount;
         this.lineCharLimit = lineCharLimit;
     }
 
     public List<List<List<String>>> getRowCellLines() {
+        // Verify the file format
+        if (isValidFile) {
+            System.out.println("The file format is correct, proceeding with pre-processing");
+        } else {
+            System.out.println("The file format is incorrect, return null");
+            return null;
+        }
+
         // Get lines in a cell for all cells in a row
         String[] rowLines = fileContent.split(ROW_SEPARATOR_REGEX);
         List<List<List<String>>> rowCellLines = new ArrayList<>();
@@ -36,6 +43,31 @@ public class PreprocessFile {
         return rowCellLines;
     }
 
+    // verify the format of the file
+    private boolean isFileFormatCorrect() {
+        // Check if the file is empty
+        if (fileContent.isBlank()) {
+            return false;
+        }
+        // Get the lines
+        String[] lines = fileContent.split(ROW_SEPARATOR_REGEX);
+
+        // Each line should have a fixed number of columns
+        int columnsCount = lines[0].split(ENTRY_SEPARATOR_REGEX).length;
+        for (String line : lines) {
+            int curColumnLength = line.split(ENTRY_SEPARATOR_REGEX).length;
+            if (columnsCount != curColumnLength) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean isFileValid() {
+        return isValidFile;
+    }
+
     // make lines out of all the text in a cell
     private List<String> splitCellIntoLines(String cell) {
         List<String> lines = new ArrayList<>();
@@ -47,6 +79,9 @@ public class PreprocessFile {
     }
 
     public int[] getMaxWidthOfColumns(List<List<List<String>>> rowCellLines) {
+        if (!isValidFile) {
+            return null;
+        }
         int[] maxWidth = new int[columnsCount];
         for (List<List<String>> cellLines : rowCellLines) {
             for (int i = 0; i < cellLines.size(); i++) {
