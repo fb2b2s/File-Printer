@@ -1,5 +1,5 @@
 Chapter#	Microservice	class	issue
 Chapter06	Product-composite	Integration	The correctness of the core microservices is never really tested. Since the core services are mocked while testing the composite service we would never know if the url is correct
-Chapter06	product-composite	product-composite	ServiceImplementation	The presistence and deletion is not atomic
+Chapter06	product-composite	ServiceImplementation	The presistence and deletion is not atomic
 Chapter06	product,review,recommendation	Implementation	Creation of entities is allowed for all the ids < 1 but get is blocked
 Chapter06	test-em-all	bash	The Post curl command doesn't wait for the delete command to complete so race condition occurs and delete command deletes whatever was posted
